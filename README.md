@@ -1,116 +1,140 @@
 # SIMULATION AND IMPLEMENTATION OF MULTIPLIER
-# AIM:
- To simulate and synthesis multiplier using Xilinx ISE.
 
-# APPARATUS REQUIRED:
-Xilinx 14.7 
-Spartan6 FPGA
-  
-# PROCEDURE:
+ **AIM:**
+ 
+To simulate multiplier using Vivado 2023.2.
 
-STEP:1  Start  the Xilinx navigator, Select and Name the New project.
+**APPARATUS REQUIRED:**
 
-STEP:2  Select the device family, device, package and speed.
+ Vivado 2023.2
+ 
+**PROCEDURE:** 
 
-STEP:3  Select new source in the New Project and select Verilog Module as the Source type.
-                      
-STEP:4  Type the File Name and Click Next and then finish button. Type the code and save it.
+1. Open Vivado: Launch Xilinx Vivado software on your computer.
 
-STEP:5  Select the Behavioral Simulation in the Source Window and click the check syntax.
-               
-STEP:6  Click the simulation to simulate the program and  give the inputs and verify the outputs as per the truth table.
-             
-STEP:7  Select the Implementation in the Sources Window and select the required file in the Processes Window.
+2. Create a New Project: Click on "Create Project" from the welcome page or navigate through "File" > "Project" > "New".
 
-STEP:8  Select Check Syntax from the Synthesize  XST Process. Double Click in the  FloorplanArea/IO/Logic-Post Synthesis process in the User Constraints process group. UCF(User constraint File) is obtained.
+3. Project Settings: Follow the prompts to set up your project. Specify the project name, location, and select RTL project type.
 
-STEP:9  In the Design Object List Window, enter the pin location for each pin in the Loc column Select save from the File menu.
+4. Add Design Files: Add your Verilog design files to the project. You can do this by right-clicking on "Design Sources" in the Sources window, then selecting "Add Sources". Choose your Verilog files from the file browser.
 
-STEP:10 Double click on the Implement Design and double click on the Generate Programming File to create a bitstream of the design.(.v) file is converted into .bit file here.
+5. Specify Simulation Settings: Go to "Simulation" > "Simulation Settings". Choose your simulation language (Verilog in this case) and simulation tool (Vivado Simulator).
 
-STEP:11  On the board, by giving required input, the LEDs starts to glow light, indicating the output.
+6. Run Simulation: Go to "Flow" > "Run Simulation" > "Run Behavioral Simulation". This will launch the Vivado Simulator and compile your design for simulation.
 
-# Logic Diagram
-# 2 bit Multiplier
+7. Set Simulation Time: In the Vivado Simulator window, set the simulation time if it's not set automatically. This determines how long the simulation will run.
 
-![image](https://github.com/navaneethans/VLSI-LAB-EXP-3/assets/6987778/7713750f-65e6-41c0-8082-5005eac4031c)
+8. Run Simulation: Start the simulation by clicking on the "Run" button in the simulation window.
 
-# 4 Bit Multiplier
+9. View Results: After the simulation completes, you can view waveforms, debug signals, and analyze the behavior of your design.
 
-![image](https://github.com/navaneethans/VLSI-LAB-EXP-3/assets/6987778/d95215dd-8cf1-4e08-93cc-96adfdd7fbdc)
+**2 BIT MULTIPLIER**:
 
+**Logic Diagram** 
 
-# Verilog code
-# 2 bit Multiplier:
+![image](https://github.com/REkha18s/VLSI-LAB-EXP-3/assets/161815097/36794313-c625-4b74-ab27-5cced950db19)
+
+ 
+**VERILOG CODE**
+
+2 bit multiplier
 ```
-module HalfAdder(a,b,sum,carry);
+module ha(a,b,sum,carry);
 input a,b;
 output sum,carry;
-xor (sum,a,b);
-and (carry,a,b);
+xor g1(sum,a,b);
+and g2(carry,a,b);
+endmodule
+module bitmul(a,b,p,cout);
+input [1:0]a,b;
+output [2:0]p;
+output cout;
+wire w1,w2,w3,w4;
+and (p[0],a[0],b[0]);
+and (w1,a[0],b[1]);
+and (w2,a[1],b[0]);
+and (w3,a[1],b[1]);
+ha adder1(w1,w2,p[1],w4);
+ha adder2(w3,w4,p[2],cout);
+
+endmodule
+```
+**OUTPUT WAVEFORM**
+
+![image](https://github.com/REkha18s/VLSI-LAB-EXP-3/assets/161815097/36ce94e1-2ca6-4a26-ac39-fa7869cc99e3)
+
+
+ **4-BIT MULTIPLIER:**
+ 
+**LOGIC DIAGRAM**
+
+![image](https://github.com/REkha18s/VLSI-LAB-EXP-3/assets/161815097/00c17002-ae2d-4096-9f0e-70ace4ca52ae)
+
+
+**VERILOG CODE**
+
+4 bit multiplier
+```
+module ha(a,b,sum,carry);
+input a,b;
+output sum,carry;
+xor g1(sum,a,b);
+and g2(carry,a,b);
 endmodule
 
-module twomul(a,b,y);
-input [1:0]a,b;
-output [3:0]y;
-wire w1,w2,w3,w4;
-and a1(y[0],a[0],b[0]);
-and a2(w1,a[1],b[0]);
-and a3(w2,a[0],b[1]);
-and a4(w3,a[1],b[1]);
-HalfAdder h0(w1,w2,y[1],w4);
-HalfAdder h1(w3,w4,y[2],y[3]);
-endmodule
-```
-# 4 Bit Multiplier:
-```
-module  ha (a,b,s,c);
-input a,b;
-output s,c;
-xor g1(s,a,b);
-and g2(c,a,b);
-endmodule
 module fa(a,b,c,sum,carry);
 input a,b,c;
-output sum ,carry;
+output sum,carry;
 wire w1,w2,w3;
-xor g1(w1,a,b);
-xor g2(sum,w1,c);
-and g3(w2,w1,c); 
-and g4(w3,a,b);
-or g5(carry,w2,w3);
+xor(w1,a,b);
+xor(sum,w1,c);
+and(w2,w1,c);
+and(w3,a,b);
+or(carry,w2,w3);
 endmodule
-module fourmul(x,y,z);
-input [3:0]x,y;
-output [7:0]z;
-wire [17:1]w;
-and(z[0],x[0],y[0]);
-ha hal (x[1]&y[0],x[0]&y[1], z[1],w[1]);
-fa fal (x[2]&y[0],x[1]&y[1],w[1],w[5],w[2]);
-fa fa2 (x[3]&y[0],x[2]&y[1],w[2],w[6],w[3]);
-ha ha2 (x[3]&y[1],w[3],w[7],w[4]);
-ha ha3 (w[5], x[0]&y [2],z[2],w[8]); 
-fa fa3 (w[6],x[1]&y[2],w[8], w[12], w[9]);
-fa fa4 (w[7],x[2]&y[2],w[9],w[13],w[10]);
-fa fa5 (w[4],x[3]&y[2],w[10],w[14], w[11]);
-ha ha4 (w[12], x[0]&y[3], z[3], w[15]);
-fa fa6 (w[13],x[1]&y[3],w[15],z[4],w[16]);
-fa fa7 (w[14],x[2]&y[3],w[16], z[5],w[17]);
-fa fa8 (w[11],x[3]&y[3],w[17],z[6],z[7]);
+module mul4bit(a,b,p);
+input [3:0]a,b;
+output [7:0]p;
+wire [15:0]w;
+wire [3:0]hc;
+wire [6:0]fc;
+wire [4:0]fs;
+wire hs;
+and r11(p[0],a[0],b[0]);
+and r12(w[1],a[1],b[0]);
+and r13(w[2],a[2],b[0]);
+and r14(w[3],a[3],b[0]);
+and r21(w[4],a[0],b[1]);
+and r22(w[5],a[1],b[1]);
+and r23(w[6],a[2],b[1]);
+and r24(w[7],a[3],b[1]);
+ha r31(w[1],w[4],p[1],hc[0]);
+fa r32(w[2],w[5],hc[0],fs[0],fc[0]);
+fa r33(w[3],w[6],fc[0],fs[1],fc[1]);
+ha r34(w[7],fc[1],hs,hc[1]);
+and r41(w[8],a[0],b[2]);
+and r42(w[9],a[1],b[2]);
+and r43(w[10],a[2],b[2]);
+and r44(w[11],a[3],b[2]);
+ha r51(w[8],fs[0],p[2],hc[2]);
+fa r52(w[9],fs[1],hc[2],fs[2],fc[2]);
+fa r53(w[10],hs,fc[2],fs[3],fc[3]);
+fa r54(w[11],hc[1],fc[3],fs[4],fc[4]);
+and r61(w[12],a[0],b[3]);
+and r62(w[13],a[1],b[3]);
+and r63(w[14],a[2],b[3]);
+and r64(w[15],a[3],b[3]);
+ha r71(w[12],fs[2],p[3],hc[3]);
+fa r72(w[13],fs[3],hc[3],p[4],fc[5]);
+fa r73(w[14],fs[4],fc[5],p[5],fc[6]);
+fa r74(w[15],fc[4],fc[6],p[6],p[7]);
 endmodule
 ```
-# Output Waveform
+**OUTPUT WAVEFORM**
 
-# 2 bit Multiplier:
-![WhatsApp Image 2024-04-21 at 14 06 12_e671b8ad](https://github.com/Afsar1276/VLSI-LAB-EXP-3/assets/161407741/e7ad7900-af01-4f63-96c1-f4cc4b8f3ad5)
+![image](https://github.com/REkha18s/VLSI-LAB-EXP-3/assets/161815097/f72a383d-579e-410e-9920-d3f2a3f751d7)
+ 
 
-# 4 bit Multiplier:
-![WhatsApp Image 2024-04-21 at 14 06 18_2a2324b1](https://github.com/Afsar1276/VLSI-LAB-EXP-3/assets/161407741/387ada05-10f8-4ce4-b5c4-d0d0eb230aea)
+**RESULT**
 
-# Result
-Hence the 2 bit multiplier and 4 bit multiplier are simulated and synthesised using vivado.
-
-
-
-
-
+To simulation 2-bit and 4-bit multiplier are verified successfullly.
